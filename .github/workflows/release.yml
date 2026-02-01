@@ -5,36 +5,84 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
-  id-token: write
 
 name: release
 
 jobs:
-  release-please:
+  create-release:
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
+      new_tag: ${{ steps.version.outputs.new_tag }}
+      should_release: ${{ steps.version.outputs.should_release }}
     steps:
-      - uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
-        id: release
+      - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-          skip-github-pull-request: true
+          fetch-depth: 0
+
+      - name: Calculate version
+        id: version
+        run: |
+          # Get current version from manifest or default to 1.0.0
+          CURRENT_VERSION=$(cat .release-please-manifest.json | grep -o '".": "[^"]*"' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' || echo "1.0.0")
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Count conventional commits since last release
+          MAJOR=0
+          MINOR=0
+          PATCH=0
+          
+          # Check commits for version bumps
+          if git log --pretty=format:"%s" | grep -q "^[a-z]*!:"; then
+            MAJOR=1
+          elif git log --pretty=format:"%s" | grep -q "^feat:"; then
+            MINOR=1
+          elif git log --pretty=format:"%s" | grep -q "^fix:"; then
+            PATCH=1
+          fi
+          
+          # Parse current version
+          IFS='.' read -r V_MAJOR V_MINOR V_PATCH <<< "$CURRENT_VERSION"
+          
+          # Calculate new version
+          if [ $MAJOR -eq 1 ]; then
+            NEW_VERSION="$((V_MAJOR + 1)).0.0"
+          elif [ $MINOR -eq 1 ]; then
+            NEW_VERSION="${V_MAJOR}.$((V_MINOR + 1)).0"
+          elif [ $PATCH -eq 1 ]; then
+            NEW_VERSION="${V_MAJOR}.${V_MINOR}.$((V_PATCH + 1))"
+          else
+            echo "should_release=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          
+          echo "New version: $NEW_VERSION"
+          echo "new_tag=v$NEW_VERSION" >> $GITHUB_OUTPUT
+          echo "should_release=true" >> $GITHUB_OUTPUT
+          
+          # Update manifest
+          echo "{\".\": \"$NEW_VERSION\"}" > .release-please-manifest.json
+
+      - name: Create Release
+        if: ${{ steps.version.outputs.should_release == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NEW_TAG="${{ steps.version.outputs.new_tag }}"
+          
+          # Create the release
+          gh release create "$NEW_TAG" \
+            --title "$NEW_TAG" \
+            --generate-notes \
+            --target ${{ github.sha }}
 
   build-binary:
-    needs: release-please
-    if: ${{ needs.release-please.outputs.release_created }}
+    needs: create-release
+    if: ${{ needs.create-release.outputs.should_release == 'true' }}
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
-        with:
-          ref: ${{ needs.release-please.outputs.tag_name }}
+      - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@3d267786b128fe76c2f16a390aa2448b815359f3 # v2.1.2
+      - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
 
@@ -43,9 +91,9 @@ jobs:
       - run: bun run build
 
       - name: Upload binary to release
-        uses: softprops/action-gh-release@a06a81a03ee405af7f2048a818ed3f03bbf83c7b # v2.5.0
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ needs.release-please.outputs.tag_name }}
+          tag_name: ${{ needs.create-release.outputs.new_tag }}
           files: |
             copilot-usage
         env:
