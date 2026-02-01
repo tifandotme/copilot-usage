@@ -1,0 +1,19 @@
+{
+  "name": "fetch_copilot_usage",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "setup": "bun index.ts setup",
+    "usage": "bun index.ts",
+    "dev": "bun run --watch index.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit",
+    "build": "bun build ./index.ts --compile --target=bun-darwin-arm64 --outfile copilot-usage --minify"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@tsconfig/bun": "latest",
+    "@types/bun": "latest"
+  }
+}
