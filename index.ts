@@ -1,8 +1,11 @@
 import { parseArgs } from "util";
+import { homedir } from "os";
 
 const CLIENT_ID = "Iv1.b507a08c87ecfe98";
 const SCOPE = "read:user";
-const TOKEN_FILE = "./copilot_token.json";
+const DATA_DIR = process.env.XDG_DATA_HOME || `${homedir()}/.local/share`;
+const TOKEN_DIR = `${DATA_DIR}/copilot-usage`;
+const TOKEN_FILE = `${TOKEN_DIR}/token.json`;
 
 interface TokenData {
   access_token: string;
@@ -176,15 +179,13 @@ async function runSetup(): Promise<void> {
   };
 
   await Bun.write(TOKEN_FILE, JSON.stringify(tokenData, null, 2));
-  console.log(`Token saved to: ${TOKEN_FILE}`);
+  console.log("Setup complete. Run `copilot-usage` to fetch usage.");
 }
 
-async function loadToken(tokenFile: string): Promise<string> {
-  const file = Bun.file(tokenFile);
+async function loadToken(): Promise<string> {
+  const file = Bun.file(TOKEN_FILE);
   if (!(await file.exists())) {
-    throw new Error(
-      `Token file not found: ${tokenFile}. Run: copilot-usage setup`,
-    );
+    throw new Error("Not authenticated. Run: copilot-usage setup");
   }
 
   const tokenData: TokenData = JSON.parse(await file.text());
@@ -225,26 +226,21 @@ function showHelp(): void {
   console.log(`copilot-usage - GitHub Copilot usage tracker
 
 Usage:
-  copilot-usage setup                 Authenticate and save token to ./copilot_token.json
-  copilot-usage [options]             Fetch usage (reads from ./copilot_token.json by default)
+  copilot-usage setup    Authenticate with GitHub
+  copilot-usage          Fetch Copilot usage (JSON output)
 
 Options:
-  --token-file <path>  Read token from custom file path
-  --help, -h           Show this help
+  --help, -h             Show this help
 
 Examples:
   copilot-usage setup
-  copilot-usage
-  copilot-usage --token-file ~/.config/copilot-token.json`);
+  copilot-usage`);
 }
 
 async function main() {
   const { values, positionals } = parseArgs({
     args: Bun.argv.slice(2),
     options: {
-      "token-file": {
-        type: "string",
-      },
       help: {
         type: "boolean",
         short: "h",
@@ -268,8 +264,7 @@ async function main() {
     console.error("Run with --help for usage");
     process.exit(1);
   } else {
-    const tokenFile = values["token-file"] || TOKEN_FILE;
-    const token = await loadToken(tokenFile);
+    const token = await loadToken();
     const usage = await fetchCopilotUsage(token);
     console.log(JSON.stringify(usage, null, 2));
   }
