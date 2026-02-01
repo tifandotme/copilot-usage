@@ -17,6 +17,7 @@
   "devDependencies": {
     "@tsconfig/bun": "latest",
     "@types/bun": "latest",
-    "release-it": "latest"
+    "release-it": "latest",
+    "@release-it/conventional-changelog": "latest"
   }
 }
