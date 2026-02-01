@@ -37,16 +37,12 @@ The token persists until you revoke it at [github.com/settings/applications](htt
 ```bash
 # Fetch and display usage with JSON output
 bun index.ts
-
-# Use in Raycast (shows usage vs monthly progress)
-./executable_copilot_usage.sh
 ```
 
 ## Project Structure
 
 - `setup_copilot_auth.ts` - OAuth device flow setup
 - `index.ts` - Main script to fetch Copilot usage from GitHub API
-- `executable_copilot_usage.sh` - Raycast integration wrapper
 - `package.json` - Project dependencies
 
 ## Troubleshooting
