@@ -17,5 +17,6 @@
     "@tsconfig/bun": "latest",
     "@types/bun": "latest",
     "release-it": "latest"
-  }
+  },
+  "version": "0.0.1"
 }
