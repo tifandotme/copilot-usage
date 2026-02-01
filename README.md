@@ -2,13 +2,6 @@
 
 A lightweight, API-based GitHub Copilot usage checker that replaces browser automation with clean GitHub API calls.
 
-## Features
-
-- ✨ **Fast**: <500ms response time (vs 5-10 seconds with browser automation)
-- 💾 **Lightweight**: ~10MB RAM usage (vs 100MB+ with Puppeteer)
-- 🔐 **Secure**: OAuth device flow authentication
-- 📊 **Flexible Output**: JSON, formatted summaries, and Raycast integration
-
 ## Installation
 
 ```bash
@@ -47,11 +40,11 @@ bun index.ts
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| "Failed to load token" | Re-run authentication: `bun setup_copilot_auth.ts` |
-| "Token expired or invalid" | Token was revoked; re-authenticate |
-| API errors | Verify your GitHub account has Copilot access |
+| Issue                      | Solution                                           |
+| -------------------------- | -------------------------------------------------- |
+| "Failed to load token"     | Re-run authentication: `bun setup_copilot_auth.ts` |
+| "Token expired or invalid" | Token was revoked; re-authenticate                 |
+| API errors                 | Verify your GitHub account has Copilot access      |
 
 ## License
 
