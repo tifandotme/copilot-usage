@@ -1,6 +1,6 @@
 {
   "name": "fetch_copilot_usage",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "private": true,
   "type": "module",
   "main": "index.ts",
@@ -18,6 +18,5 @@
     "@tsconfig/bun": "latest",
     "@types/bun": "latest",
     "release-it": "latest"
-  },
-  "version": "0.0.1"
+  }
 }
