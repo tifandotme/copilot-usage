@@ -4,6 +4,17 @@ A lightweight, API-based GitHub Copilot usage checker that replaces browser auto
 
 ## Installation
 
+### Prebuilt Binary (macOS ARM64 only)
+
+Download the latest `copilot-usage` binary from the [Releases](https://github.com/tifandotme/copilot-usage/releases) page. Currently only **macOS ARM64 (Apple Silicon)** is supported.
+
+```bash
+# Download and use directly
+./copilot-usage
+```
+
+### Build from Source
+
 ```bash
 git clone https://github.com/tifandotme/copilot-usage.git
 cd copilot-usage
