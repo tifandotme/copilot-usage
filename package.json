@@ -9,11 +9,13 @@
     "dev": "bun run --watch index.ts",
     "test": "bun test",
     "typecheck": "tsc --noEmit",
-    "build": "bun build ./index.ts --compile --target=bun-darwin-arm64 --outfile copilot-usage --minify"
+    "build": "bun build ./index.ts --compile --target=bun-darwin-arm64 --outfile copilot-usage --minify",
+    "release": "release-it"
   },
   "dependencies": {},
   "devDependencies": {
     "@tsconfig/bun": "latest",
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "release-it": "latest"
   }
 }

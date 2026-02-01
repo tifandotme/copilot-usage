@@ -1,0 +1,14 @@
+{
+  "git": {
+    "commitMessage": "chore(release): v${version}",
+    "tagName": "v${version}",
+    "push": true
+  },
+  "github": {
+    "release": true,
+    "assets": ["copilot-usage"]
+  },
+  "npm": {
+    "publish": false
+  }
+}
