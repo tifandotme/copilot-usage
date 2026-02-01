@@ -1,5 +1,7 @@
 # Changelog
 
+## [0.1.1](https://github.com/tifandotme/copilot-usage/compare/v0.1.0...v0.1.1) (2026-02-01)
+
 # [0.1.0](https://github.com/tifandotme/copilot-usage/compare/v0.0.3...v0.1.0) (2026-02-01)
 
 
